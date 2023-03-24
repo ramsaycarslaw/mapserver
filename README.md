@@ -29,3 +29,34 @@ PORT=8080 go run main.go
 ```
 
 > Note the default is `8080
+
+## Building the server 
+
+To build the server you can run:
+
+```sh
+cd services
+go build main.go
+```
+
+This will create an executable for your *current platform*.
+
+## Running the server
+
+To run the server you can run:
+
+```sh
+cd services
+./mapserver
+```
+
+## Integration Guide
+
+You can integrate the executable with other npm projects by listing go as a dependency and then using the following in `package.json`
+
+```json
+"scripts": {
+  "mapserver": "cd {MAPSERVER_DIR} && go build && PORT={DESIRED_PORT} ./mapserver"
+}
+```
+
