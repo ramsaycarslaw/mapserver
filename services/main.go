@@ -1,28 +1,29 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"net/http"
-	"os"
 )
 
 func main() {
-	fs := http.FileServer(http.Dir("../public"))
+	bindAddress := flag.String("ip", "0.0.0.0", "IP address to bind")
+	listenPort := flag.Int("port", 25478, "port number to listen on")
+	maxUploadSize := flag.Int64("upload_limit", 6400000, "max size of uploaded file (byte)")
 
-	// check if env port is set
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	flag.Parse()
+	serverRoot := flag.Arg(0)
+	if len(serverRoot) == 0 {
+		flag.Usage()
+		log.Fatal("Wrong number of arguments")
 	}
 
-	log.Println("✅ Running map server on")
-	log.Println("<======================>")
-	log.Println("🚀 http://localhost:" + port)
+	server := NewServer(serverRoot, *maxUploadSize)
+	http.Handle("/upload", server)
+	http.Handle("/files/", server)
 
-	err := http.ListenAndServe(":"+port, fs)
-
-	// handle the error if exists
-	if err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", *bindAddress, *listenPort), nil); err != nil {
 		log.Fatal(err)
 	}
 }

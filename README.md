@@ -19,13 +19,14 @@ Next to run the Go file server you can run:
 
 ```sh
 cd services
-go run main.go
+go run main.go /PATH/TO/DIRECTORY/TO/SERVE -ip IPADRESS -port PORT -upload_limit UPLOAD_LIMIT_BYTES
 ```
+> The default IP is `localhost` port is `8080` and upload limit is `6400000`
 
-To specify the port the server runs on you can use 
+For example to serve a directory called files which is two directories up from `main.go` on localhost with port 8080 and a maximum upload size of 64KB.
 
 ```
-PORT=8080 go run main.go
+go run main.go ../../files -ip 0.0.0.0 -port 8080 -upload_limit 640000
 ```
 
 > Note the default is `8080
@@ -47,7 +48,7 @@ To run the server you can run:
 
 ```sh
 cd services
-./mapserver
+./mapserver ../../files
 ```
 
 ## Integration Guide
@@ -56,7 +57,33 @@ You can integrate the executable with other npm projects by listing go as a depe
 
 ```json
 "scripts": {
-  "mapserver": "cd {MAPSERVER_DIR} && go build && PORT={DESIRED_PORT} ./mapserver"
+  "mapserver": "cd {MAPSERVER_DIR} && go build && ./mapserver {PATH} -ip {IP} -port {PORT}"
 }
 ```
 
+## Downloading files 
+
+Assuming the server is already running
+
+### Curl
+
+```
+curl 'http://localhost:8080/files/filename'
+```
+## Uploading 
+
+Assuming the server is already running 
+
+### Curl
+
+```
+curl -Ffile=@filename 'http://localhost:8080/upload'
+```
+### Python
+
+```py
+import requests
+
+with open('filename', 'r') as f:
+    r = requests.post('http://localhost:25478/upload', files={'/files/filename_on_server': f})
+```
