@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -57,6 +58,13 @@ func (s Server) handlePost(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Println("Error writing file:", err)
 		return
+	}
+
+	// Get the extension of the filename
+	extension := strings.Split(info.Filename, ".")[1]
+	log.Println(extension)
+	if extension == "pgm" {
+		log.Println("here")
 	}
 
 	log.Println(info.Filename)
